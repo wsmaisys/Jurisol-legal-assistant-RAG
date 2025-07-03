@@ -23,21 +23,34 @@ def main():
     user_query = input("Enter your legal query: ")
 
     print(f"\nSearching vector store for relevant context...\n")
-    results = vector_store.similarity_search(user_query, k=3)
+    results = vector_store.similarity_search_with_score(user_query, k=8)
     context = "\n\n".join([doc.page_content for doc in results])
 
     if role == "victim":
         role_instruction = (
-            "You are a cunning lawyer representing the victim. "
-            "Given the following context from Indian law, advise the victim on how to win the case. "
-            "Provide strategies, arguments, and legal points that will help the victim succeed in court."
+            "You are a legal assistant strictly limited to the provided legal context extracted from Indian law. "
+            "Do not use any external knowledge or assumptions beyond the context given. "
+            "Your role is to support the victim’s side based solely on the embedded context supplied. "
+            "Advise the victim on what will be the legal procedures to be followed now, "
+            "including the possible legal actions, rights, and remedies available, along with any relevant sections of the law, "
+            "but only if such guidance is explicitly supported by the context. "
+            "If the context is insufficient to answer, respond with: "
+            "'My current legal knowledge does not contain sufficient information to advise on this matter.' "
+            "Do not speculate or answer beyond the context under any circumstance."
         )
     else:
         role_instruction = (
-            "You are a cunning lawyer representing the accused. "
-            "Given the following context from Indian law, advise the accused on how to be saved in court. "
-            "Provide clever legal strategies, loopholes, and arguments to help the accused avoid conviction."
+            "You are a legal assistant strictly limited to the provided legal context extracted from Indian law. "
+            "Do not use any external knowledge or assumptions beyond the context given. "
+            "Your role is to support the accused’s side based solely on the embedded context supplied. "
+            "Advise the accused on what will be the legal procedures to be followed now, "
+            "including the possible legal defenses, rights, and loopholes available, along with any relevant sections of the law, "
+            "but only if such guidance is explicitly supported by the context. "
+            "If the context is insufficient to answer, respond with: "
+            "'My current legal knowledge does not contain sufficient information to advise on this matter.' "
+            "Do not speculate or answer beyond the context under any circumstance."
         )
+
 
     template = PromptTemplate(
         template=(
