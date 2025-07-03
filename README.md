@@ -1,74 +1,75 @@
 
+# Jurisol-An AI Legal Assistant-RAG
 
-# Jurisol: AI-Powered Indian Legal Assistant
+> **AI-powered legal research assistant for Indian law, using Retrieval-Augmented Generation (RAG) and vector search.**
 
-Jurisol is an advanced AI-powered legal assistant tailored for Indian law. It leverages state-of-the-art language models, vector search, and custom tools to provide fast, accurate, and context-aware legal information and document analysis.
-
----
-
-## 🚀 Key Features
-
-- **Legal Document Search & Analysis:** Quickly search and analyze Indian legal documents, statutes, and case laws.
-- **Access to Precedents:** Retrieve relevant Indian legal precedents and case law references.
-- **Intelligent Query Understanding:** Natural language interface for complex legal queries.
-- **Session-Based Conversations:** Maintains context and history for each user session.
-- **Asynchronous & Robust Backend:** FastAPI backend with async processing and error recovery.
-- **Clean, Modern UI:** Streamlit-based frontend for an intuitive chat experience.
-- **Custom Tools:** Online search, summarization, and vector-based semantic search.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Issues](https://img.shields.io/github/issues/wsmaisys/Jurisol-legal-assistant-RAG)
 
 ---
 
-## 🗂️ Project Structure
-
-```
-LangGraph-Tutorial/
-├── app.py                  # FastAPI backend server (main API)
-├── frontend.py             # Streamlit frontend (chat interface)
-├── requirements.txt        # Python dependencies
-├── tools/                  # Custom tool implementations
-│   ├── __init__.py
-│   ├── online_search_tool.py      # Online legal document search
-│   ├── summarization_tool.py      # Document summarization
-│   └── vector_search_tool.py      # Vector database search
-└── indian_law_vector_store/       # Vector database storage (ChromaDB)
-    └── ...                        # Vector store files
-```
+## 📑 Table of Contents
+- [Project Description](#project-description)
+- [Key Features](#-key-features)
+- [How Jurisol Works](#-how-jurisol-works)
+- [Technologies Used](#-technologies-used)
+- [Setup & Installation](#-setup--installation)
+- [Usage Guide](#-usage-guide)
+- [What Makes Jurisol Different?](#-what-makes-jurisol-different)
+- [Contribution](#-contribution)
+- [License](#-license)
+- [Contact](#-contact)
+- [Acknowledgments](#-acknowledgments)
 
 ---
 
-## ⚙️ Technical Overview
 
-### Backend (`app.py`)
-- Built with **FastAPI** for high performance and async request handling
-- Orchestrates workflows using **LangGraph**
-- Integrates custom tools for search, summarization, and vector retrieval
-- Manages user sessions and conversation state
-- Provides robust error handling and health checks
+## Project Description
 
-### Frontend (`frontend.py`)
-- Built with **Streamlit** for a modern, responsive chat UI
-- Handles session state, error feedback, and user interaction
-- Connects to backend via REST API
+**Jurisol Legal Assistant RAG** is your intelligent, AI-powered legal research companion designed to revolutionize the way you access, understand, and utilize Indian law. Leveraging advanced Retrieval-Augmented Generation (RAG) techniques, Jurisol delivers precise, context-aware answers to your legal queries by searching and synthesizing information from a curated vector database of Indian legal documents.
 
-### Tools (`tools/`)
-- **Online Search Tool:** Searches legal documents online (Tavily API)
-- **Vector Search Tool:** Semantic search over local vector DB (ChromaDB)
-- **Summarization Tool:** Summarizes legal documents and URLs
+🚀 **Key Features:**
+- **Instant Legal Insights:** Get accurate, well-referenced answers to complex legal questions in seconds.
+- **AI-Powered Search:** Combines the power of natural language processing and vector search for deep, relevant results.
+- **Indian Law Focus:** Specially tailored for Indian statutes, case law, and legal principles.
+- **User-Friendly Interface:** Simple, intuitive, and ready for both legal professionals and students.
 
+🔍 **Why Jurisol?**
+Jurisol empowers you to cut through legal jargon, save research time, and make informed decisions with confidence. Whether you’re a lawyer, law student, or just curious about Indian law, Jurisol is your go-to assistant for reliable legal information.
+
+---
+
+
+## 🛠️ How Jurisol Works
+
+1. **Query Input:** Users ask legal questions in natural language.
+2. **Semantic Search:** The system uses advanced vector search to retrieve the most relevant legal documents, statutes, and case law from its curated Indian law database.
+3. **Retrieval-Augmented Generation (RAG):** Jurisol’s AI model synthesizes the retrieved information, generating a clear, context-aware answer with references.
+4. **Response Delivery:** The user receives a concise, well-cited answer, ready for legal research or decision-making.
+
+### 🔄 Workflow Overview
+
+1. **User Interface** → 2. **Query Preprocessing** → 3. **Vector Store Search (ChromaDB)** → 4. **RAG Model (LLM)** → 5. **Answer Generation & Citation** → 6. **User Output**
+
+---
+
+
+## 🧑‍💻 Technologies Used
 ---
 
 ## 🛠️ Setup & Installation
 
 ### Prerequisites
 - Python 3.10 or higher
-- `pip` package manager
+- pip
 - (Recommended) Virtual environment
 
 ### Installation Steps
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   cd LangGraph-Tutorial
+   git clone https://github.com/wsmaisys/Jurisol-legal-assistant-RAG.git
+   cd Jurisol-legal-assistant-RAG
    ```
 2. **Create and activate a virtual environment:**
    ```bash
@@ -85,48 +86,41 @@ LangGraph-Tutorial/
 4. **Set up environment variables:**
    Create a `.env` file in the project root:
    ```env
-   MISTRAL_API_KEY=your_mistral_api_key
+   # Example
+   OPENAI_API_KEY=your_openai_key
    ```
 
 ---
 
-## ▶️ Running the Application
+## ▶️ Usage Guide
 
-1. **Start the backend server:**
+1. Start the backend server:
    ```bash
    python app.py
    ```
-2. **Start the frontend in a new terminal:**
+2. (Optional) Start the frontend:
    ```bash
    streamlit run frontend.py
    ```
-3. **Open your browser:**
-   Visit [http://localhost:8501](http://localhost:8501)
+3. Open your browser and interact with the assistant.
+4. Example query: `What is the punishment for theft under IPC?`
 
 ---
 
-## 💡 Usage Guide
-
-1. Enter your legal query in the chat input (e.g., "What is the punishment for theft under IPC?")
-2. Wait for the AI to process and respond with relevant legal information, statutes, or case law
-3. Review the response and follow up with further questions as needed
-4. Clear chat history or start a new session anytime
+- **Python**: Core programming language for backend logic and orchestration.
+- **ChromaDB**: High-performance vector database for semantic search and document retrieval.
+- **Large Language Models (LLMs)**: For natural language understanding and answer generation (e.g., OpenAI GPT, Llama, or similar).
+- **RAG (Retrieval-Augmented Generation)**: Combines search and generative AI for accurate, context-rich responses.
+- **Streamlit/FastAPI (optional)**: For building interactive user interfaces (can be extended).
 
 ---
 
-## ⚡ Performance & Optimization
-- Connection pooling for efficient HTTP requests
-- Fast vector search for legal documents
-- Memory-optimized session and conversation management
-- Robust error handling and automatic retries
 
-## 🔒 Security & Reliability
-- Secure session and state management
-- Input validation and sanitization
-- Rate limiting and error containment
-- Health checks and logging
+## ✨ What Makes Jurisol Different?
+---
 
-## 📝 Contributing
+## 🤝 Contribution
+
 Contributions are welcome! To contribute:
 1. Fork this repository
 2. Create a new feature branch
@@ -136,10 +130,23 @@ Contributions are welcome! To contribute:
 ---
 
 ## 📄 License
-[Add appropriate license information here]
+
+
+This project is licensed under the terms of the **MIT License**. See the LICENSE file for details.
+
+- **Author:** [wsmaisys on GitHub](https://github.com/wsmaisys)
+- **Contact:** wsmaisys@gmail.com
+
+---
 
 ## 📬 Contact
-[Add your contact information here]
+
+For any queries, suggestions, or support, feel free to reach out:
+
+- **GitHub:** [wsmaisys](https://github.com/wsmaisys)
+- **Email:** wsmaisys@gmail.com
+
+---
 
 ## 🙏 Acknowledgments
 - LangGraph (workflow orchestration)
@@ -151,4 +158,10 @@ Contributions are welcome! To contribute:
 
 ---
 
-Created by Waseem M Ansari
+- **India-Centric Legal Focus:** Unlike generic AI legal tools, Jurisol is purpose-built for Indian law, statutes, and case law, ensuring unmatched relevance and accuracy.
+- **Transparent Citations:** Every answer is backed by references to actual legal documents, making it trustworthy for professional use.
+- **Cutting-Edge RAG Pipeline:** Integrates the latest in vector search and generative AI for deep, context-aware legal research.
+- **Customizable & Extensible:** Open-source and modular, allowing easy adaptation for new legal domains or jurisdictions.
+- **User Empowerment:** Designed for both legal professionals and students, making advanced legal research accessible to all.
+
+---
