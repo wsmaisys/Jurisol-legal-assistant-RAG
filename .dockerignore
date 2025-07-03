@@ -17,3 +17,6 @@ logs/
 *.bak
 *.swp
 *.tmp
+
+Old_Experimental_files/
+search_tavily.ipynb
