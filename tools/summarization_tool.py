@@ -85,32 +85,66 @@ class SummarizationTool:
             # Use session for connection pooling and added retry logic
             for attempt in range(3):  # Retry up to 3 times
                 try:
-                    response = self.session.get(url, timeout=15, headers=headers, verify=False)  # Increased timeout
+                    response = self.session.get(url, timeout=20, headers=headers, verify=False)
                     response.raise_for_status()
                     break
                 except (requests.exceptions.RequestException) as e:
                     if attempt == 2:  # Last attempt
-                        raise
-                    time.sleep(1)  # Wait before retry
-            response.raise_for_status()
+                        return {"url": url, "error": f"Request failed after retries: {str(e)}"}
+                    time.sleep(1)
             content_type = response.headers.get("Content-Type", "").lower()
+            # --- PDF Handling ---
             if "application/pdf" in content_type or url.lower().endswith(".pdf"):
-                pdf = PdfReader(BytesIO(response.content))
-                text = "\n".join(
-                    page.extract_text() for page in pdf.pages if page.extract_text()
-                )
-                content_type_label = "PDF"
+                try:
+                    pdf = PdfReader(BytesIO(response.content))
+                    text_chunks = []
+                    for i, page in enumerate(pdf.pages):
+                        try:
+                            page_text = page.extract_text()
+                            if page_text:
+                                text_chunks.append(page_text)
+                        except Exception as pe:
+                            logging.warning(f"PDF page {i} extraction failed: {pe}")
+                    text = "\n".join(text_chunks)
+                    if not text.strip():
+                        return {"url": url, "error": "PDF contains no extractable text (may be scanned or image-based)."}
+                    content_type_label = "PDF"
+                except Exception as pdf_e:
+                    return {"url": url, "error": f"PDF extraction failed: {str(pdf_e)}"}
+            # --- HTML Handling ---
             elif "text/html" in content_type:
-                soup = BeautifulSoup(response.text, "html.parser")
-                for tag in soup(["script", "style", "nav", "header", "footer", "noscript"]):
-                    tag.decompose()
-                text = soup.get_text(separator="\n")
-                text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
-                content_type_label = "HTML"
+                try:
+                    soup = BeautifulSoup(response.text, "html.parser")
+                    # Remove unwanted tags
+                    for tag in soup(["script", "style", "nav", "header", "footer", "noscript", "aside", "form", "svg", "iframe"]):
+                        tag.decompose()
+                    # Try to extract main content heuristically
+                    main = soup.find('main')
+                    article = soup.find('article')
+                    if article and len(article.get_text(strip=True)) > 200:
+                        text = article.get_text(separator="\n", strip=True)
+                    elif main and len(main.get_text(strip=True)) > 200:
+                        text = main.get_text(separator="\n", strip=True)
+                    else:
+                        # Fallback: get all paragraphs
+                        paragraphs = soup.find_all('p')
+                        text = '\n'.join(p.get_text(separator=' ', strip=True) for p in paragraphs if len(p.get_text(strip=True)) > 40)
+                        if not text.strip():
+                            # Fallback: get all text
+                            text = soup.get_text(separator="\n")
+                    # Clean up excessive whitespace
+                    text = "\n".join(line.strip() for line in text.splitlines() if line.strip())
+                    if not text.strip():
+                        return {"url": url, "error": "No extractable text found in HTML."}
+                    content_type_label = "HTML"
+                except Exception as html_e:
+                    return {"url": url, "error": f"HTML extraction failed: {str(html_e)}"}
             else:
-                return {"url": url, "error": "Unsupported content type"}
+                return {"url": url, "error": f"Unsupported content type: {content_type}"}
+            # Truncate to 12000 chars for LLM
             return {"url": url, "text": text[:12000], "content_type": content_type_label}
         except Exception as e:
+            logging.exception(f"[SummarizationTool] fetch_content error for {url}")
             return {"url": url, "error": str(e)}
 
     def summarize(self, text: str) -> str:

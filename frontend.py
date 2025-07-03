@@ -1,4 +1,12 @@
 import streamlit as st
+st.markdown(
+    """
+    <p style='text-align: center; font-size: 0.95em; margin-bottom: 0.5em;'>
+        <i>For best results, use specific queries and avoid ambiguous or vague searches.</i>
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 import requests
 import time
 import json

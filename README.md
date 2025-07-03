@@ -161,6 +161,7 @@ This project is licensed under the terms of the **MIT License**. See the LICENSE
 - FastAPI (backend server)
 - Qdrant (vector database)
 - Tavily (online search)
+- Anthropic, OpenAI and GitHub (Brilliant AI tools).
 - All contributors and supporters
 
 ---

@@ -132,59 +132,55 @@ def tool_agent_node(state):
                 content = results[0] if isinstance(results[0], str) else results[0].get('content', '')
                 if intent == "summarize_case":
                     summary = summarizer(content)
-                    response = f"📚 Summary of Indian Case Law:\n\n{summary}"
+                    response = f"\U0001F4DA Summary of Indian Case Law:\n\n{summary}"
                 else:
-                    response = f"🔍 Indian Case Found:\n\n{content}"
+                    response = f"\U0001F50D Indian Case Found:\n\n{content}"
             else:
                 # Fallback to online search if vector search returns no or invalid results
                 logging.info("Vector search returned no valid results, falling back to online search")
                 alt_results = online_tool(last_user_msg)
-                
-                # Process search results
+                # Always try to summarize the fetched article content from online search
                 search_content = []
-                
                 if isinstance(alt_results, (list, dict)):
                     # Handle structured results
                     if isinstance(alt_results, list):
                         for result in alt_results:
                             if isinstance(result, dict):
-                                # Handle dictionary results (URLs and content)
                                 if not result.get('error'):
-                                    if 'content' in result:
-                                        search_content.append(result['content'])
+                                    if 'content' in result and result['content']:
+                                        # Summarize the fetched content
+                                        summary = summarizer(result['content'])
+                                        search_content.append(f"Source: {result['url']}\nSummary: {summary}")
                                     elif 'url' in result:
                                         search_content.append(f"Source: {result['url']}")
                             else:
-                                # Handle string results
                                 search_content.append(str(result))
                     else:  # single dictionary
                         if not alt_results.get('error'):
-                            if 'content' in alt_results:
-                                search_content.append(alt_results['content'])
+                            if 'content' in alt_results and alt_results['content']:
+                                summary = summarizer(alt_results['content'])
+                                search_content.append(f"Source: {alt_results['url']}\nSummary: {summary}")
                             elif 'url' in alt_results:
                                 search_content.append(f"Source: {alt_results['url']}")
-                    
                     if search_content:
                         # Prepare context for LLM analysis
                         analysis_prompt = (
                             f"Legal Query: {last_user_msg}\n\n"
-                            f"Available Legal Information:\n\n{chr(10).join(search_content)}\n\n"
-                            f"Please provide a comprehensive legal analysis using the above information. "
+                            f"Available Legal Information (summarized from sources):\n\n{chr(10).join(search_content)}\n\n"
+                            f"Please provide a comprehensive legal analysis using the above summarized information. "
                             f"Follow the response methodology to analyze the sources, extract relevant legal principles, "
                             f"and connect them to the query. Maintain focus on Indian law context and practical implications."
                         )
-                        # Generate integrated response
                         response = app_state["llm"].invoke([
                             SYSTEM_PROMPT,
                             HumanMessage(content=analysis_prompt)
                         ]).content
                     else:
-                        response = "⚠️ No valid legal sources found. Please try rephrasing your query."
+                        response = "\u26a0\ufe0f No valid legal sources found. Please try rephrasing your query."
                 elif isinstance(alt_results, str):
-                    # Handle plain text results
-                    response = f"🌐 Legal Search Result:\n\n{alt_results}"
+                    response = f"\U0001F310 Legal Search Result:\n\n{alt_results}"
                 else:
-                    response = "⚠️ Unexpected search result format. Please try rephrasing your query."
+                    response = "\u26a0\ufe0f Unexpected search result format. Please try rephrasing your query."
         elif intent == "summarize":
             # Check if it's a direct paragraph summarization request
             if last_user_msg.lower().startswith("summarize this paragraph:"):

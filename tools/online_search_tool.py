@@ -44,68 +44,82 @@ class OnlineSearchTool:
             pass
 
     def process_results(self, results):
-        """Process and filter search results"""
+        """Process and filter search results, fetch content from URLs."""
+        import requests
+        from bs4 import BeautifulSoup
         result_list = results.get('results') if isinstance(results, dict) and 'results' in results else results
-        urls = []
+        processed = []
         if isinstance(result_list, list):
             for result in result_list:
                 if isinstance(result, dict) and "url" in result:
                     url = result["url"]
                     # Only include .gov.in and .nic.in domains
                     if any(domain in url.lower() for domain in ['.gov.in', '.nic.in']):
-                        urls.append(url)
-        return list(dict.fromkeys(url for url in urls if url))
+                        # Try to fetch and extract main content
+                        try:
+                            resp = requests.get(url, timeout=10)
+                            soup = BeautifulSoup(resp.text, 'html.parser')
+                            # Try to extract main content heuristically
+                            article = soup.find('article')
+                            if article:
+                                text = article.get_text(separator=' ', strip=True)
+                            else:
+                                # Fallback: get all paragraphs
+                                paragraphs = soup.find_all('p')
+                                text = ' '.join(p.get_text(separator=' ', strip=True) for p in paragraphs)
+                            # Truncate if too long
+                            if len(text) > 4000:
+                                text = text[:4000] + '... [truncated]'
+                        except Exception as e:
+                            text = f"[Could not fetch content: {e}]"
+                        processed.append({"url": url, "content": text})
+        return processed
 
     def __call__(self, query: str):
+        import logging
         try:
-            print(f"Searching for: {query}")
-            
+            logging.info(f"[OnlineSearch] Searching for: {query}")
             # Check cache first
             cached_results = self.get_cached_results(query)
             if cached_results is not None:
+                logging.info(f"[OnlineSearch] Returning cached results for: {query}")
                 return cached_results
-
             from concurrent.futures import ThreadPoolExecutor, TimeoutError
-            
             for attempt in range(3):
                 try:
-                    # Run search with timeout
                     with ThreadPoolExecutor() as executor:
                         future = executor.submit(self.search_tool.invoke, query)
                         try:
-                            results = future.result(timeout=30)  # 30-second timeout
+                            results = future.result(timeout=30)
                         except TimeoutError:
-                            if attempt == 2:  # Last attempt
+                            logging.warning(f"[OnlineSearch] Timeout on attempt {attempt+1} for query: {query}")
+                            if attempt == 2:
                                 raise Exception("Search timed out after multiple attempts")
                             time.sleep(1)
                             continue
-                    
-                    print(f"Raw TavilySearch results: {results}")
+                    logging.info(f"[OnlineSearch] Raw TavilySearch results: {results}")
                     urls = self.process_results(results)
-                    
+                    logging.info(f"[OnlineSearch] Processed URLs: {urls}")
                     if urls:
                         final_results = [{"url": url} for url in urls[:3]]
                         self.cache_results(query, final_results)
+                        logging.info(f"[OnlineSearch] Returning final results for: {query}")
                         return final_results
-                    
-                    # Try with alternative query if no results
                     if attempt == 0:
                         query = f"site:gov.in OR site:nic.in {query}"
                         continue
                     elif attempt == 1:
-                        # Try more general search
                         query = " ".join(query.split()[:3]) + " site:gov.in"
                         continue
-                    
+                    logging.warning(f"[OnlineSearch] No relevant legal documents found for query: {query}")
                     return [{"error": "No relevant legal documents found. Would you like to provide more details about your situation?"}]
-                
                 except Exception as e:
-                    if attempt == 2:  # Last attempt
+                    logging.exception(f"[OnlineSearch] Exception on attempt {attempt+1} for query: {query}")
+                    if attempt == 2:
                         raise
-                    time.sleep(1)  # Wait before retry
-            
+                    time.sleep(1)
+            logging.warning(f"[OnlineSearch] No relevant legal documents found after retries for query: {query}")
             return [{"error": "No relevant legal documents found. Would you like to provide more details about your situation?"}]
-        
         except Exception as e:
-            print(f"Search failed: {str(e)}")
+            logging.exception(f"[OnlineSearch] Search failed for query: {query}")
             return [{"error": f"I encountered an issue while searching. Could you please rephrase your question or provide more details?"}]
