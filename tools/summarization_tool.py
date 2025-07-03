@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 import urllib3
+import logging
 from bs4 import BeautifulSoup
 from PyPDF2 import PdfReader
 from io import BytesIO
@@ -149,15 +150,25 @@ class SummarizationTool:
         """
         return self.llm.invoke(context_prompt).content
 
-    def __call__(self, url: str):
-        content_info = self.fetch_content(url)
-        if "error" in content_info:
-            return content_info
-        summary = self.summarize(content_info["text"])
-        context = self.extract_context(content_info["text"])
-        return {
-            "url": url,
-            "summary": summary,
-            "context": context,
-            "content_type": content_info["content_type"]
-        }
+    def __call__(self, text: str) -> str:
+        """Process text input and return a summary"""
+        try:
+            # Check if this is a text that starts with "Summarize:" or "Summarize this paragraph:"
+            if ":" in text:
+                prefix, content = text.split(":", 1)
+                if prefix.lower().strip() in ["summarize", "summarize this paragraph"]:
+                    text = content.strip()
+
+            # If it's a URL, fetch the content
+            if text.strip().startswith(('http://', 'https://')):
+                content_info = self.fetch_content(text.strip())
+                if "error" in content_info:
+                    return f"Error: Unable to process URL - {content_info['error']}"
+                if "text" in content_info:
+                    text = content_info["text"]
+            
+            # Generate the summary using the LLM
+            return self.summarize(text)
+        except Exception as e:
+            logging.exception("Error in summarization")
+            return f"Error: Unable to generate summary - {str(e)}"
