@@ -2,15 +2,18 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
-from langchain_chroma import Chroma
 from langchain_mistralai import MistralAIEmbeddings
+from qdrant_client import QdrantClient
+from qdrant_client.http import models as rest
 
-# Initialize vector store
-vector_store = Chroma(
-    embedding_function=MistralAIEmbeddings(model="mistral-embed"),
-    persist_directory='./indian_law_vector_store',
-    collection_name='indian_law_docs'
-)
+# Qdrant configuration
+QDRANT_URL = os.getenv("QDRANT_URL").strip('"') if os.getenv("QDRANT_URL") else None
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+COLLECTION_NAME = "jurisol-legal-embeddings"
+
+client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+
+embeddings_model = MistralAIEmbeddings(model="mistral-embed", mistral_api_key=os.getenv("MISTRAL_API_KEY"))
 
 def parse_metadata_filters(query: str) -> tuple[str, dict]:
     """
@@ -21,13 +24,15 @@ def parse_metadata_filters(query: str) -> tuple[str, dict]:
     'title': ['title', 'heading', 'name']
     """
     metadata_filters = {}
-    search_query = query
-    
-    # Available metadata fields from our document store
+    search_query = query        # Available metadata fields from our document store with enhanced mappings
     metadata_fields = {
         'section': ['section', 'sec', 's'],
         'law_name': ['law', 'act', 'law_name', 'statute'],
-        'title': ['title', 'heading', 'name']
+        'title': ['title', 'heading', 'name'],
+        'chapter': ['chapter', 'chap', 'ch'],
+        'section_desc': ['section_desc', 'description', 'desc', 'content'],
+        'section_title': ['section_title', 'stitle'],
+        'chapter_title': ['chapter_title', 'ctitle']
     }
     
     # Extract metadata filters
@@ -77,70 +82,82 @@ def search_indian_law_documents(query: str, max_results: int = 5, confidence_thr
         # Parse metadata filters from query
         search_query, metadata_filters = parse_metadata_filters(query)
         
-        # Prepare where clause for metadata filtering
-        where = {}
-        
-        # Process metadata filters
-        for field, value in metadata_filters.items():
-            if field == 'section':
-                # Handle section numbers
-                try:
-                    where[field] = str(int(value))  # Convert to string as sections are stored as strings
-                except ValueError:
-                    where[field] = {"$regex": value, "$options": "i"}
-            elif field == 'law_name':
-                # Handle law names with flexible matching
-                where[field] = {"$regex": value.replace('_', ' '), "$options": "i"}
-            else:
-                # Handle other fields with case-insensitive search
-                where[field] = {"$regex": value, "$options": "i"}
-        
-        # Perform similarity search with metadata filtering
-        try:
-            if where:
-                results = vector_store.similarity_search_with_relevance_scores(
-                    search_query,
-                    k=max_results,
-                    where=where
-                )
-            else:
-                results = vector_store.similarity_search_with_relevance_scores(
-                    search_query,
-                    k=max_results
-                )
-        except TypeError as e:
-            # Fallback: try without 'where' if TypeError about multiple 'where' arguments
-            if 'multiple values for keyword argument' in str(e):
-                results = vector_store.similarity_search_with_relevance_scores(
-                    search_query,
-                    k=max_results
-                )
-            else:
-                raise
-        
-        results = sorted(results, key=lambda x: x[1], reverse=True)
-        
+        # Prepare Qdrant filter for metadata filtering
+        qdrant_filter = None
+        if metadata_filters:
+            should = []
+            for field, value in metadata_filters.items():
+                # Create a match condition using string match for all fields
+                should.append(rest.Filter(
+                    must=[
+                        rest.FieldCondition(
+                            key=field,
+                            match=rest.MatchValue(value=str(value))
+                        )
+                    ]
+                ))
+            qdrant_filter = rest.Filter(should=should) if should else None
+
+        # Get embedding for the search query
+        query_vector = embeddings_model.embed_query(search_query)
+
+        # Perform similarity search with Qdrant using search (supports filtering)
+        results = client.search(
+            collection_name=COLLECTION_NAME,
+            query_vector=query_vector,
+            limit=max_results,
+            with_payload=True,
+            query_filter=qdrant_filter
+        )
+
+        # Qdrant returns a list of ScoredPoint objects
+        # Each has .payload (dict), .score (float)
+        # We'll mimic the Chroma output for formatting
+        scored_results = []
+        for r in results:
+            # Qdrant stores the full section as payload
+            payload = r.payload or {}
+            # Try to extract a main content field
+            content = payload.get('section_desc') or payload.get('section_title') or payload.get('title') or payload.get('text') or ''
+            # For compatibility with formatting, wrap in a dummy object
+            class DummyDoc:
+                def __init__(self, payload, content):
+                    self.metadata = payload
+                    self.page_content = str(content)
+            scored_results.append((DummyDoc(payload, content), r.score))
+
+        results = sorted(scored_results, key=lambda x: x[1], reverse=True)
+
         # Filter by confidence threshold if specified
         if confidence_threshold > 0:
             results = [(doc, score) for doc, score in results if score >= confidence_threshold]
-        
+
         # Check if any results found
         if not results:
             return f"No relevant legal documents found for query: '{query}'. Try rephrasing your question or lowering the confidence threshold."
-        
-        # Format results for LLM consumption
+
+        # Format results for LLM consumption with enhanced structure
         formatted_output = []
         formatted_output.append(f"SEARCH QUERY: {query}")
+        formatted_output.append(f"QUERY CONTEXT: {search_query}")  # Show cleaned query for context
+
         if metadata_filters:
             formatted_output.append("METADATA FILTERS:")
             for field, value in metadata_filters.items():
                 formatted_output.append(f"- {field}: {value}")
+
+        # Add search statistics
+        formatted_output.append(f"\nSEARCH STATISTICS:")
+        formatted_output.append(f"- Total matches found: {len(results)}")
+        formatted_output.append(f"- Average relevance score: {sum(score for _, score in results) / len(results):.4f}")
+        formatted_output.append(f"- Top relevance score: {results[0][1]:.4f}")
+
         formatted_output.append(f"\nFOUND {len(results)} RELEVANT LEGAL DOCUMENTS:\n")
-        
+
         for i, (document, similarity_score) in enumerate(results, 1):
             formatted_output.append(f"--- DOCUMENT {i} ---")
             formatted_output.append(f"Similarity Score: {similarity_score:.4f}")
-            
+
             # Add metadata if available
             if hasattr(document, 'metadata') and document.metadata:
                 metadata_str = []
@@ -149,21 +166,38 @@ def search_indian_law_documents(query: str, max_results: int = 5, confidence_thr
                         metadata_str.append(f"{key.title()}: {value}")
                 if metadata_str:
                     formatted_output.append(f"Source: {' | '.join(metadata_str)}")
-            
-            # Add document content
+
+            # Add document content with better structure for LLM analysis
             content = document.page_content.strip()
-            if len(content) > 1000:  # Truncate very long content
-                content = content[:1000] + "... [Content truncated]"
-            
-            formatted_output.append(f"Content:\n{content}")
+
+            # Extract section description if available from metadata
+            section_desc = document.metadata.get('section_desc', '')
+            if section_desc:
+                formatted_output.append(f"Section Description:\n{section_desc}")
+
+            # Add main content
+            formatted_output.append("Content:")
+            if len(content) > 1500:  # Increased length for more context
+                # Try to break at a sentence boundary
+                truncate_point = content[:1500].rfind('.')
+                if truncate_point == -1:
+                    truncate_point = 1500
+                content = content[:truncate_point + 1] + "... [Content truncated]"
+            formatted_output.append(content)
+
+            # Add any related sections or cross-references from metadata
+            related_sections = document.metadata.get('related_sections', [])
+            if related_sections:
+                formatted_output.append(f"\nRelated Sections: {', '.join(related_sections)}")
+
             formatted_output.append("")  # Empty line for separation
-        
+
         # Add usage summary
         formatted_output.append(f"--- SEARCH SUMMARY ---")
         formatted_output.append(f"Total documents found: {len(results)}")
         if results:
             formatted_output.append(f"Average similarity score: {sum(score for _, score in results) / len(results):.4f}")
-            
+
             # Add metadata summary if present
             metadata_summary = {}
             for doc, _ in results:
@@ -172,7 +206,7 @@ def search_indian_law_documents(query: str, max_results: int = 5, confidence_thr
                         if key not in metadata_summary:
                             metadata_summary[key] = set()
                         metadata_summary[key].add(str(value))
-            
+
             if metadata_summary:
                 formatted_output.append("\nMETADATA SUMMARY:")
                 for key, values in metadata_summary.items():
@@ -180,7 +214,7 @@ def search_indian_law_documents(query: str, max_results: int = 5, confidence_thr
                         formatted_output.append(f"- {key}: {', '.join(sorted(values))}")
                     else:
                         formatted_output.append(f"- {key}: {len(values)} unique values")
-        
+
         return "\n".join(formatted_output)
         
     except Exception as e:

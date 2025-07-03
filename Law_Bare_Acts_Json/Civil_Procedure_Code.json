@@ -1,0 +1,857 @@
+[
+  {
+    "section": 1,
+    "title": "Short title, commencement and extent",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 2,
+    "title": "Definitions",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 3,
+    "title": "Subordination of Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 4,
+    "title": "Savings",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 5,
+    "title": "Application of the Code to Revenue Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 6,
+    "title": "Pecuniary jurisdiction",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 7,
+    "title": "Provincial Small Cause Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 8,
+    "title": "Presidency Small Cause Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 9,
+    "title": "Courts to try all civil suits unless barred",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 10,
+    "title": "Stay of suit",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 11,
+    "title": "Res judicata",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 12,
+    "title": "Bar to further suit",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 13,
+    "title": "When foreign judgment not conclusive",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 14,
+    "title": "Presumption as to foreign judgments",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 15,
+    "title": "Court in which suits to be instituted",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 16,
+    "title": "Suits to be instituted where subject-matter situate",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 17,
+    "title": "Suits for immovable property situate within jurisdiction of different Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 18,
+    "title": "Place of institution of suit where local limits of jurisdiction of Courts are uncertain",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 19,
+    "title": "Suits for compensation for wrongs to person or movables",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 20,
+    "title": "Other suits to be instituted where defendants reside or cause of action arises",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 21,
+    "title": "Objections to jurisdiction",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "21A.",
+    "title": "Baron suit to set aside decree on objection as to place of suing",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 22,
+    "title": "Power to transfer suits which may be instituted in more than one Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 23,
+    "title": "To what Court application lies",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 24,
+    "title": "General power of transfer and withdrawal",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 25,
+    "title": "Power of Supreme Court to transfer suits, etc",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 26,
+    "title": "Institution of suits",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 27,
+    "title": "Summons to defendants",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 28,
+    "title": "Service of summons where defendant resides in another State",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 29,
+    "title": "Service of foreign summonses",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 30,
+    "title": "Power to order discovery and the like",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 31,
+    "title": "Summons to witness",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 32,
+    "title": "Penalty for default",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 33,
+    "title": "Judgment and decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 34,
+    "title": "Interest",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 35,
+    "title": "Costs",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "35A.",
+    "title": "Compensatory costs in respect of false or vexatious claims or defences",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "35B.",
+    "title": "Costs for causing delay",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 36,
+    "title": "Application to orders",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 37,
+    "title": "Definition of Court which passed a decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 38,
+    "title": "Court by which decree may be executed",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 39,
+    "title": "Transfer of decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 40,
+    "title": "Transfer of decree to Court in another State",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 41,
+    "title": "Result of execution proceedings to be certified",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 42,
+    "title": "Powers of Court in executing transferred decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 43,
+    "title": "Execution of decrees passed by Civil Courts in places to which this Code does not extend",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 44,
+    "title": "Execution of decrees passed by Revenue Courts in places to which this Code does not extend",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "44A.",
+    "title": "Execution of decrees passed by Courts in reciprocating territory",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 45,
+    "title": "Execution of decrees outside India",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 46,
+    "title": "Precepts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 47,
+    "title": "Questions to be determined by the Court executing decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 48,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 49,
+    "title": "Transferee",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 50,
+    "title": "Legal representative",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 51,
+    "title": "Powers of Court to enforce execution",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 52,
+    "title": "Enforcement of decree against legal representative",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 53,
+    "title": "Liability of ancestral property",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 54,
+    "title": "Partition of estate or separation of share",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 55,
+    "title": "Arrest and detention",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 56,
+    "title": "Prohibition of arrest or detention of women in execution of decree for money",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 57,
+    "title": "Subsistence-allowance",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 58,
+    "title": "Detention and release",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 59,
+    "title": "Release on ground of illness",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 60,
+    "title": "Property liable to attachment and sale in execution of decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 61,
+    "title": "Partial exemption of agricultural produce",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 62,
+    "title": "Seizure of property in dwelling-house",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 63,
+    "title": "Property attached in execution of decrees of several Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 64,
+    "title": "Private alienation of property after attachment to be void",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 65,
+    "title": "Purchaser's title",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 66,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 67,
+    "title": "Power for State Government to make rules as to sales of land in execution of decrees for payment of money",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 68,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 69,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 70,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 71,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 72,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 73,
+    "title": "Proceeds of execution sale to be rateably distributed among decree-holders",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 74,
+    "title": "Resistance to execution",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 75,
+    "title": "Power of Court to issue commissions",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 76,
+    "title": "Commission to another Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 77,
+    "title": "Letter of request",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 78,
+    "title": "Commissions issued by foreign Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 79,
+    "title": "Suits by or against Government",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 80,
+    "title": "Notice",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 81,
+    "title": "Exemption from arrest and personal appearance",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 82,
+    "title": "Execution of decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 83,
+    "title": "When aliens may sue",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 84,
+    "title": "When foreign States may sue",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 85,
+    "title": "Persons specially appointed by Government to prosecute or defend on behalf of foreign Rulers",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 86,
+    "title": "Suits against foreign Rulers, Ambassadors and Envoys",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 87,
+    "title": "Style of foreign Rulers as parties to suits",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "87A.",
+    "title": "Definitions of foreign State and Ruler",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "87B.",
+    "title": "Application of sections 85 and 86 to Rulers of former Indian States",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 88,
+    "title": "Where interpleader-suit may be instituted",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 89,
+    "title": "Settlement of disputes outside the Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 90,
+    "title": "Power to state case for opinion of Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 91,
+    "title": "Public nuisances and other wrongful acts affecting the public",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 92,
+    "title": "Public charities",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 93,
+    "title": "Exercise of powers of Advocate-General outside presidency-towns",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 94,
+    "title": "Supplemental proceedings",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 95,
+    "title": "Compensation for obtaining arrest, attachment or injunction on insufficient ground",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 96,
+    "title": "Appeal from original decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 97,
+    "title": "Appeal from final decree where no appeal from preliminary decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 98,
+    "title": "Decision where appeal heard by two or more Judges",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 99,
+    "title": "No decree to be reversed or modified for error or irregularity not affecting merits or jurisdiction",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "99A.",
+    "title": "No order under section 47 to be reversed or modified unless decision of the case is prejudicially affected",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 100,
+    "title": "Second appeal",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "100A.",
+    "title": "No further appeal in certain cases",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 101,
+    "title": "Second appeal on no other grounds",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 102,
+    "title": "No second appeal in certain cases",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 103,
+    "title": "Power of High Court to determine issue of fact",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 104,
+    "title": "Orders from which appeal lies",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 105,
+    "title": "Other orders",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 106,
+    "title": "What Courts to hear appeals",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 107,
+    "title": "Powers of Appellate Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 108,
+    "title": "Procedure in appeals from appellate decrees and orders",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 109,
+    "title": "When appeals lie to the Supreme Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 110,
+    "title": "[Omitted]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 111,
+    "title": "[Omitted]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "111A.",
+    "title": "[Omitted]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 112,
+    "title": "Savings",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 113,
+    "title": "Reference to High Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 114,
+    "title": "Review",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 115,
+    "title": "Revision",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 116,
+    "title": "Part to apply only to certain High Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 117,
+    "title": "Application of Code to High Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 118,
+    "title": "Execution of decree before ascertainment of costs",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 119,
+    "title": "Unauthorised persons not to address Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 120,
+    "title": "Provisions not applicable to High Court in original civil jurisdiction",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 121,
+    "title": "Effect of rules in First Schedule",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 122,
+    "title": "Power of certain High Courts to make rules",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 123,
+    "title": "Constitution of Rule Committees in certain States",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 124,
+    "title": "Committee to report to High Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 125,
+    "title": "Power of other High Courts to make rules",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 126,
+    "title": "Rules to be subject to approval",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 127,
+    "title": "Publication of rules",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 128,
+    "title": "Matters for which rules may provide",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 129,
+    "title": "Power of High Courts to make rules as to their original Civil procedure",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 130,
+    "title": "Power of other High Courts to make rules as to matters other than procedure",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 131,
+    "title": "Publication of rules",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 132,
+    "title": "Exemption of certain women from personal appearance",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 133,
+    "title": "Exemption of other persons",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 134,
+    "title": "Arrest other than in execution of decree",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 135,
+    "title": "Exemption from arrest under civil process",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "135A.",
+    "title": "Exemption of members of legislative bodies from arrest and detention under civil process",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 136,
+    "title": "Procedure where person to be arrested or property to be attached is out side district",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 137,
+    "title": "Language of subordinate Courts",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 138,
+    "title": "Power of High Court to require evidence to be recorded in English",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 139,
+    "title": "Oath on affidavit by whom to be administered",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 140,
+    "title": "Assessors in causes of salvage, etc",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 141,
+    "title": "Miscellaneous proceedings",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 142,
+    "title": "Orders and notices to be in writing",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 143,
+    "title": "Postage",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 144,
+    "title": "Application for restitution",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 145,
+    "title": "Enforcement of liability of surety",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 146,
+    "title": "Proceedings by or against representatives",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 147,
+    "title": "Consent or agreement by persons under disability",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 148,
+    "title": "Enlargement of time",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "148A.",
+    "title": "Right to lodge a caveat",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 149,
+    "title": "Power to make up deficiency of court-fees",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 150,
+    "title": "Transfer of business",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 151,
+    "title": "Saving of inherent powers of Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 152,
+    "title": "Amendment of judgments, decrees or orders",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 153,
+    "title": "General power to amend",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "153A.",
+    "title": "Power to amend decree or order where appeal is summarily dismissed",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": "153B.",
+    "title": "Place of trial to be deemed to be open Court",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 154,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 155,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 156,
+    "title": "[Repealed]",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 157,
+    "title": "Continuance of orders under repealed enactments",
+    "law_name": "Code of Civil Procedure, 1908"
+  },
+  {
+    "section": 158,
+    "title": "Reference to Code of Civil Procedure and other repealed enactments",
+    "law_name": "Code of Civil Procedure, 1908"
+  }
+]

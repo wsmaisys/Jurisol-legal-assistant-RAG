@@ -20,3 +20,5 @@ logs/
 
 Old_Experimental_files/
 search_tavily.ipynb
+qdrant.py
+Law_Bare_Acts_Json/
