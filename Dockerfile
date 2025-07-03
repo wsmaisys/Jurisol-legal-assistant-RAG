@@ -25,8 +25,9 @@ RUN pip install --upgrade pip \
 # Copy project files
 COPY . .
 
-# Expose Streamlit and FastAPI ports
-EXPOSE 8501 8000
 
-# Default command: run both backend and frontend
+# Expose only Streamlit frontend port
+EXPOSE 8501
+
+# Start both backend and frontend, but only expose frontend
 CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port 8000 & streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0"]
