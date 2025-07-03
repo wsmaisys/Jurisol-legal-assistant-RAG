@@ -2,7 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
-from qdrant_client.http.models import VectorParams, Distance, PayloadSchemaType
+from qdrant_client.http.models import VectorParams, Distance
 from typing import List
 from pathlib import Path
 
@@ -34,7 +34,7 @@ except Exception as e:
 
 # --- AUTONOMOUS: SCAN ALL FILES FOR METADATA KEYS ---
 all_keys = set()
-from pathlib import Path
+
 law_dir = Path(LAW_FILES_DIR)
 for file in law_dir.glob("*.json"):
     try:
@@ -73,6 +73,8 @@ except Exception as e:
 # ------------------------------------
 # Your embedding model
 # ------------------------------------
+
+
 from langchain_mistralai import MistralAIEmbeddings
 
 embeddings_model = MistralAIEmbeddings(
@@ -97,7 +99,7 @@ def mistral_embed(text: str) -> List[float]:
 # ------------------------------------
 # Utility to ingest one JSON file (per law)
 # ------------------------------------
-import time
+
 
 def ingest_json_file(file_path: Path, start_id=1):
     print(f"\nProcessing file: {file_path.name}")
@@ -124,6 +126,7 @@ def ingest_json_file(file_path: Path, start_id=1):
         if points:
             client.upsert(collection_name=COLLECTION_NAME, points=points)
         # Wait 2 seconds between batches to avoid overloading the embedding LLM
+        import time
         time.sleep(2)
     return next_id
 

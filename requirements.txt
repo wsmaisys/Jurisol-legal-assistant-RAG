@@ -1,5 +1,4 @@
 beautifulsoup4==4.13.4
-chromadb
 fastapi==0.111.0
 httpx
 langchain
@@ -17,4 +16,4 @@ streamlit==1.35.0
 tavily-python==0.3.0
 uvicorn==0.29.0
 urllib3==2.2.1
-langchain_chroma 
+qdrant-client
