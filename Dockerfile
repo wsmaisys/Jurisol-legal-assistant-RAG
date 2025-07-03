@@ -3,7 +3,7 @@
 # Use official Python image
 FROM python:3.12-slim
 
-# Set environment variables
+# Set environment variables (API keys should be provided at runtime)
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
@@ -18,9 +18,15 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements
 COPY requirements.txt ./
 
-# Install Python dependencies
-RUN pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+# Install Rust (required for building tiktoken)
+RUN apt-get update && apt-get install -y curl build-essential \
+    && curl https://sh.rustup.rs -sSf | sh -s -- -y \
+    && . $HOME/.cargo/env \
+    && pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get remove --purge -y curl \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
 COPY . .
