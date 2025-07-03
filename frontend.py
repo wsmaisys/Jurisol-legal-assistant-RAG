@@ -1,4 +1,10 @@
 import streamlit as st
+st.set_page_config(
+    page_title="Jurisol - AI Legal Assistant",
+    page_icon="⚖️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 st.markdown(
     """
     <p style='text-align: center; font-size: 0.95em; margin-bottom: 0.5em;'>
@@ -261,12 +267,6 @@ def process_chat_request(prompt: str, message_placeholder) -> Optional[str]:
         st.session_state.is_processing = False
 
 # Streamlit Configuration
-st.set_page_config(
-    page_title="Jurisol - AI Legal Assistant",
-    page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Initialize session state
 init_session_state()
