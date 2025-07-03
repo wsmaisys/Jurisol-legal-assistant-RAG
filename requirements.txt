@@ -10,9 +10,10 @@ langchain-tavily==0.2.5
 langgraph==0.5.0
 mistralai==1.9.1
 pandas
-pypdf2==3.0.1
+PyPDF2==3.0.1
 python-dotenv==1.1.1
 requests==2.32.4
 streamlit
 tavily-python
 uvicorn
+urllib3
