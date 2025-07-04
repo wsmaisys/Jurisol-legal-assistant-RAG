@@ -1,7 +1,10 @@
 
+
 # Jurisol: AI-Powered Indian Legal Assistant (RAG)
 
 > **AI-powered legal research assistant for Indian law, using Retrieval-Augmented Generation (RAG) and Qdrant vector search.**
+
+**Docker Hub:** [wasimansariiitm/jurisol-legal-assistant](https://hub.docker.com/r/wasimansariiitm/jurisol-legal-assistant)
 
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -60,6 +63,17 @@
 - **TavilySearch** (online search tool for Indian government sites)
 - **PyPDF2, BeautifulSoup4** (document parsing)
 - **Docker** (containerization)
+
+---
+
+## 🐳 Docker Usage
+
+You can quickly run Jurisol using the pre-built Docker image from Docker Hub:
+
+```bash
+docker pull wasimansariiitm/jurisol-legal-assistant
+docker run --env-file .env -p 8501:8501 wasimansariiitm/jurisol-legal-assistant
+```
 
 ---
 
