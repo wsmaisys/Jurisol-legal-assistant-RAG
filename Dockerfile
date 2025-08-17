@@ -13,23 +13,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies for SQLite
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt ./
 
-# Ensure pip is up-to-date and install dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir pysqlite3-binary && \
     pip install --no-cache-dir -r requirements.txt
-
-# Configure Python to use pysqlite3
-RUN echo 'import sys, pysqlite3; sys.modules["sqlite3"] = pysqlite3' > /usr/local/lib/python3.12/sqlite3_config.py && \
-    echo 'import sqlite3_config' >> /usr/local/lib/python3.12/sitecustomize.py
 
 # Create directory for Chroma database
 RUN mkdir -p /app/tools/chroma_legal_index
