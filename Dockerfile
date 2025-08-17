@@ -12,13 +12,26 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies and SQLite (required for Chroma)
+# Install system dependencies and build SQLite3 from source (Chroma requires >= 3.35.0)
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    sqlite3 \
-    libsqlite3-dev \
+    wget \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Download and install latest SQLite
+RUN wget https://www.sqlite.org/2024/sqlite-autoconf-3450000.tar.gz \
+    && tar xzf sqlite-autoconf-3450000.tar.gz \
+    && cd sqlite-autoconf-3450000 \
+    && ./configure --prefix=/usr/local \
+    && make \
+    && make install \
+    && cd .. \
+    && rm -rf sqlite-autoconf-3450000*
+
+# Update library path to use the new SQLite
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
 # Copy requirements first for better caching
 COPY requirements.txt ./
