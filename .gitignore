@@ -10,6 +10,7 @@
 !Dockerfile
 !app.py
 !frontend.py
+!Jurisol Flux.png
 
 # And not the tools directory...
 !tools/
