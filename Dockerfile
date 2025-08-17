@@ -33,7 +33,7 @@ RUN mkdir -p /app/tools/chroma_legal_index
 COPY . .
 
 # Expose ports for both FastAPI and Streamlit
-EXPOSE 8000 8501
+EXPOSE 8501
 
 # Create a non-root user for security
 RUN useradd -r -u 999 -g users jurisol && \
@@ -44,4 +44,4 @@ USER jurisol
 RUN python -c "import sqlite3; print(f'SQLite version: {sqlite3.sqlite_version}')"
 
 # Start both backend and frontend services
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port 8000 & streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0"]
+CMD ["sh", "-c", "streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0"]
