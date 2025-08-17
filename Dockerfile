@@ -1,22 +1,25 @@
 # Dockerfile for Jurisol: AI-Powered Indian Legal Assistant
 
-# Use official Python image with slim variant for smaller size
-FROM python:3.12-slim as builder
+# Use Python Alpine image for newer SQLite
+FROM python:3.12-alpine
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/app \
-    LD_LIBRARY_PATH=/usr/local/lib
+    PYTHONPATH=/app
 
 # Set work directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+    build-base \
+    linux-headers \
+    python3-dev \
+    libffi-dev \
+    openssl-dev \
+    sqlite-dev
 
 # Copy requirements first for better caching
 COPY requirements.txt ./
@@ -35,7 +38,7 @@ COPY . .
 EXPOSE 8000 8501
 
 # Create a non-root user for security
-RUN useradd -m -u 1000 jurisol && \
+RUN adduser -D jurisol && \
     chown -R jurisol:jurisol /app
 USER jurisol
 
