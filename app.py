@@ -1,3 +1,5 @@
+from tools.patch_sqlite import patch_sqlite  # Import the patch before any other imports
+
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, AIMessage
