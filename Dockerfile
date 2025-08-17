@@ -1,7 +1,7 @@
 # Dockerfile for Jurisol: AI-Powered Indian Legal Assistant
 
-# Use Python Alpine image for newer SQLite
-FROM python:3.12-alpine
+# Use Python slim image for better package compatibility
+FROM python:3.12-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -13,13 +13,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Install system dependencies
-RUN apk add --no-cache \
-    build-base \
-    linux-headers \
+RUN apt-get update && apt-get install -y \
+    build-essential \
     python3-dev \
     libffi-dev \
-    openssl-dev \
-    sqlite-dev
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt ./
@@ -38,9 +36,12 @@ COPY . .
 EXPOSE 8000 8501
 
 # Create a non-root user for security
-RUN adduser -D jurisol && \
-    chown -R jurisol:jurisol /app
+RUN useradd -r -u 999 -g users jurisol && \
+    chown -R jurisol:users /app
 USER jurisol
+
+# Print SQLite version on startup for verification
+RUN python -c "import sqlite3; print(f'SQLite version: {sqlite3.sqlite_version}')"
 
 # Start both backend and frontend services
 CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port 8000 & streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0"]
