@@ -1,8 +1,13 @@
 
 
+
+<div align="center">
+  <img src="Jurisol%20Flux.png" alt="Jurisol Flux"/>
+</div>
+
 # Jurisol: AI-Powered Indian Legal Assistant (RAG)
 
-> **AI-powered legal research assistant for Indian law, using Retrieval-Augmented Generation (RAG) and Qdrant vector search.**
+> **AI-powered legal research assistant for Indian law, using Retrieval-Augmented Generation (RAG) and Chroma vector search.**
 
 **Docker Hub:** [wasimansariiitm/jurisol-legal-assistant](https://hub.docker.com/r/wasimansariiitm/jurisol-legal-assistant)
 
@@ -29,24 +34,43 @@
 
 ## Project Description
 
-**Jurisol** is an intelligent, AI-powered legal research assistant for Indian law. It leverages Retrieval-Augmented Generation (RAG) and a Qdrant vector database to deliver precise, context-aware answers to your legal queries by searching and synthesizing information from a curated database of Indian legal documents.
+**Jurisol** is an intelligent, AI-powered legal research assistant for Indian law. It leverages Retrieval-Augmented Generation (RAG) and a Chroma vector database to deliver precise, context-aware answers to your legal queries by searching and synthesizing information from a curated database of Indian legal documents.
 
 ---
 
 ## 🚀 Key Features
 
-- **Instant Legal Insights:** Accurate, referenced answers to complex legal questions.
-- **AI-Powered Search:** Combines natural language processing and vector search for deep, relevant results.
-- **Indian Law Focus:** Specially tailored for Indian statutes, case law, and legal principles.
-- **User-Friendly Interface:** Streamlit frontend for interactive chat; FastAPI backend for robust API.
-- **Transparent Citations:** Every answer is backed by references to actual legal documents.
+- **Advanced Legal Research:** 
+  - Accurate, context-aware answers with automatic query classification
+  - Combines vector search of legal documents with real-time online research
+  - Transparent citations and references to legal sources
+  
+- **Enhanced Conversation Management:**
+  - Multi-threaded chat with persistent conversation history
+  - Thread search and organization capabilities
+  - Streaming responses for better user experience
+  
+- **Intelligent Query Processing:**
+  - Automatic distinction between legal queries and casual conversation
+  - Enhanced response generation with relevant legal context
+  - Fallback mechanisms for robust error handling
+  
+- **Specialized Indian Law Focus:**
+  - Curated database of Indian statutes and legal documents
+  - Integration with government legal resources
+  - Context-aware responses based on Indian legal framework
+  
+- **Modern Technical Architecture:**
+  - LangGraph for sophisticated workflow orchestration
+  - MistralAI's latest models for improved responses
+  - Modular tool system for extensible capabilities
 
 ---
 
 ## � How Jurisol Works
 
 1. **User Query:** Ask legal questions in natural language.
-2. **Semantic Search:** Qdrant vector search retrieves the most relevant legal documents from the Indian law database.
+2. **Semantic Search:** Chroma vector search retrieves the most relevant legal documents from the Indian law database.
 3. **RAG Pipeline:** The AI model synthesizes retrieved information, generating a clear, context-aware answer with references.
 4. **Response:** The user receives a concise, well-cited answer, ready for research or decision-making.
 
@@ -56,13 +80,23 @@
 
 - **Python 3.12+**
 - **FastAPI** (backend API)
-- **Streamlit** (frontend UI)
-- **Qdrant** (vector database for semantic search)
-- **MistralAI** (LLM and embeddings)
+- **Streamlit** (frontend UI with multi-threaded chat support)
+- **Chroma** (vector database for semantic search)
+- **LangGraph** (workflow orchestration and tool chaining)
+- **MistralAI** (LLM model: mistral-small-latest)
 - **LangChain** (LLM orchestration, vector search, summarization)
 - **TavilySearch** (online search tool for Indian government sites)
-- **PyPDF2, BeautifulSoup4** (document parsing)
+- **Checkpointing** (InMemorySaver for state persistence)
 - **Docker** (containerization)
+
+Core Features:
+- Multi-threaded conversations with persistent history
+- Intelligent query classification (legal vs casual)
+- Context-aware response generation using vector and online search
+- Enhanced error handling and response validation
+- Modular tool architecture for extensibility
+- Streaming responses for better UX
+- Advanced frontend with thread management and search
 
 ---
 
@@ -82,7 +116,7 @@ docker run --env-file .env -p 8501:8501 wasimansariiitm/jurisol-legal-assistant
 ### Prerequisites
 - Python 3.12 or higher
 - Docker (for containerized deployment)
-- Qdrant instance (local or managed)
+- Chroma database (local SQLite or remote)
 
 ### Installation Steps
 
@@ -100,8 +134,8 @@ docker run --env-file .env -p 8501:8501 wasimansariiitm/jurisol-legal-assistant
 3. **Set up environment variables:**
    Create a `.env` file in the project root:
    ```
-   QDRANT_URL=http://localhost:6333
-   QDRANT_API_KEY=your_qdrant_api_key
+   CHROMA_HOST=localhost
+   CHROMA_PORT=8000
    MISTRAL_API_KEY=your_mistral_api_key
    TAVILY_API_KEY=your_tavily_api_key
    ```
@@ -139,7 +173,7 @@ docker run --env-file .env -p 8501:8501 wasimansariiitm/jurisol-legal-assistant
 - Use Docker for consistent deployment.
 - Pass secrets and API keys via environment variables or Docker secrets.
 - For scalability, run FastAPI and Streamlit in separate containers behind a reverse proxy (Nginx, Traefik).
-- Use a managed Qdrant instance or run Qdrant in a separate container with persistent storage.
+- Use a managed Chroma instance or run Chroma with SQLite for local development.
 - Set up monitoring, logging, and health checks for robust production operation.
 
 ---
@@ -173,7 +207,7 @@ This project is licensed under the terms of the **MIT License**. See the LICENSE
 - Mistral AI (language model)
 - Streamlit (frontend framework)
 - FastAPI (backend server)
-- Qdrant (vector database)
+- Chroma (vector database)
 - Tavily (online search)
 - Anthropic, OpenAI and GitHub (Brilliant AI tools).
 - All contributors and supporters

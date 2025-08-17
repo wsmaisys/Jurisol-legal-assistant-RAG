@@ -1,24 +1,50 @@
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.db
-*.sqlite3
-*.log
-*.env
-.env.*
-.DS_Store
+# Ignore everything by default
+*
+
+# Include specific directories first (order matters)
+!tools/
+!tools/**
+!tools/chroma_legal_index/
+!tools/chroma_legal_index/**
+
+# Allow only specific files and directories
+!app.py
+!frontend.py
+!requirements.txt
+!README.md
+!LICENSE
+!tools/
+!tools/**
+
+# Always ignore certain patterns
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.so
+**/.DS_Store
+**/.env
+**/.env.*
+**/*.log
+**/*.sqlite3
+**/*.db
+
+# Include Chroma database files for vector search
+!tools/chroma_legal_index/
+!tools/chroma_legal_index/**
+
+# Ignore development and IDE files
+.git/
+.gitignore
 .vscode/
 .idea/
 *.egg-info/
-logs/
-!indian_law_vector_store/
-*.ipynb_checkpoints/
-*.bak
-*.swp
-*.tmp
+.pytest_cache/
+.coverage
 
-Old_Experimental_files/
-search_tavily.ipynb
-qdrant.py
-Law_Bare_Acts_Json/
+# Ignore all notebooks
+**/*.ipynb
+**/.ipynb_checkpoints/
+
+# Ignore all log directories
+**/logs/

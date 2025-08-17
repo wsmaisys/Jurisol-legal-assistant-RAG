@@ -1,32 +1,17 @@
-# Refactored app.py for Jurisol - Legal AI Assistant (stateless with compact history)
-
-import os
-import json
-import asyncio
-import time
-import logging
-from typing import Annotated, List, Dict, Any, Optional, TypedDict
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import asynccontextmanager
-
+from langgraph.graph import StateGraph, START, END
+from typing import TypedDict, Annotated
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, AIMessage
 from langchain_mistralai import ChatMistralAI
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langgraph.graph import StateGraph
-from langgraph.checkpoint.memory import MemorySaver
-
-from tools.vector_search_tool import search_indian_law_documents
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph.message import add_messages
+from dotenv import load_dotenv
+from langchain.tools import Tool
+from langgraph.prebuilt import ToolNode
+from langgraph.prebuilt import tools_condition
+from tools.vector_search_tool import chroma_search_with_score
 from tools.online_search_tool import OnlineSearchTool
 from tools.summarization_tool import SummarizationTool
-
-# --- Setup ---
-load_dotenv()
-logging.basicConfig(level=logging.INFO)
-
-app_state = {"llm": None, "graph": None, "executor": None, "tools": {}}
+import re
 
 # --- System Prompt ---
 SYSTEM_PROMPT = SystemMessage(content="""
@@ -84,200 +69,291 @@ Maintain a professional, authoritative tone while ensuring:
 - Practical context and implications
 - Actionable insights for further research
 
+For casual greetings or non-legal conversations, respond naturally and professionally while being ready to assist with legal matters.
+
 Remember: You are not just providing information, but offering sophisticated legal analysis integrated with source materials. Each response should demonstrate your ability to synthesize complex legal information into clear, actionable insights.""")
 
-# --- Models ---
-class ChatRequest(BaseModel):
-    message: str
-    history: Optional[List[Dict[str, str]]] = []
+# Load environment variables from .env file
+load_dotenv()
 
-class ChatResponse(BaseModel):
-    response: str
-    session_id: str
-    timestamp: float
-
-class HealthResponse(BaseModel):
-    status: str
-    timestamp: float
-
-# --- LangGraph State ---
-class State(TypedDict):
-    messages: Annotated[List[Any], ...]
-
-# --- Intent Detection ---
-def detect_intent(message: str) -> str:
-    lowered = message.lower()
-    if "case" in lowered and "summarize" in lowered:
-        return "summarize_case"
-    elif "case" in lowered or "judgment" in lowered:
-        return "search_case"
-    elif "summarize" in lowered:
-        return "summarize"
-    return "general"
-
-# --- LangGraph Node ---
-def tool_agent_node(state):
-    messages = state["messages"]
-    last_user_msg = messages[-1].content if messages else ""
-    intent = detect_intent(last_user_msg)
-    vector_tool = app_state["tools"].get("vector")
-    summarizer = app_state["tools"].get("summarizer")
-    online_tool = app_state["tools"].get("online")
-    response = ""
-    
-    try:
-        if intent in ["summarize_case", "search_case"]:
-            results = vector_tool(last_user_msg)
-            if results and (isinstance(results[0], dict) or (isinstance(results[0], str) and len(results[0].strip()) > 50)):
-                content = results[0] if isinstance(results[0], str) else results[0].get('content', '')
-                if intent == "summarize_case":
-                    summary = summarizer(content)
-                    response = f"\U0001F4DA Summary of Indian Case Law:\n\n{summary}"
-                else:
-                    response = f"\U0001F50D Indian Case Found:\n\n{content}"
-            else:
-                # Fallback to online search if vector search returns no or invalid results
-                logging.info("Vector search returned no valid results, falling back to online search")
-                alt_results = online_tool(last_user_msg)
-                # Always try to summarize the fetched article content from online search
-                search_content = []
-                if isinstance(alt_results, (list, dict)):
-                    # Handle structured results
-                    if isinstance(alt_results, list):
-                        for result in alt_results:
-                            if isinstance(result, dict):
-                                if not result.get('error'):
-                                    if 'content' in result and result['content']:
-                                        # Summarize the fetched content
-                                        summary = summarizer(result['content'])
-                                        search_content.append(f"Source: {result['url']}\nSummary: {summary}")
-                                    elif 'url' in result:
-                                        search_content.append(f"Source: {result['url']}")
-                            else:
-                                search_content.append(str(result))
-                    else:  # single dictionary
-                        if not alt_results.get('error'):
-                            if 'content' in alt_results and alt_results['content']:
-                                summary = summarizer(alt_results['content'])
-                                search_content.append(f"Source: {alt_results['url']}\nSummary: {summary}")
-                            elif 'url' in alt_results:
-                                search_content.append(f"Source: {alt_results['url']}")
-                    if search_content:
-                        # Prepare context for LLM analysis
-                        analysis_prompt = (
-                            f"Legal Query: {last_user_msg}\n\n"
-                            f"Available Legal Information (summarized from sources):\n\n{chr(10).join(search_content)}\n\n"
-                            f"Please provide a comprehensive legal analysis using the above summarized information. "
-                            f"Follow the response methodology to analyze the sources, extract relevant legal principles, "
-                            f"and connect them to the query. Maintain focus on Indian law context and practical implications."
-                        )
-                        response = app_state["llm"].invoke([
-                            SYSTEM_PROMPT,
-                            HumanMessage(content=analysis_prompt)
-                        ]).content
-                    else:
-                        response = "\u26a0\ufe0f No valid legal sources found. Please try rephrasing your query."
-                elif isinstance(alt_results, str):
-                    response = f"\U0001F310 Legal Search Result:\n\n{alt_results}"
-                else:
-                    response = "\u26a0\ufe0f Unexpected search result format. Please try rephrasing your query."
-        elif intent == "summarize":
-            # Check if it's a direct paragraph summarization request
-            if last_user_msg.lower().startswith("summarize this paragraph:"):
-                paragraph = last_user_msg.split(":", 1)[1].strip()
-                summary = summarizer(paragraph)
-            elif "summarize:" in last_user_msg.lower():
-                paragraph = last_user_msg.split("summarize:", 1)[1].strip()
-                summary = summarizer(paragraph)
-            else:
-                # If no explicit paragraph marker, summarize the entire message
-                summary = summarizer(last_user_msg)
-            response = f"📝 Summary:\n\n{summary}"
-        else:
-            llm_response = app_state["llm"].invoke([SYSTEM_PROMPT] + messages).content
-            if "i am unable to perform online searches" in llm_response.lower() or "based on the data i've been trained on" in llm_response.lower():
-                reminder_prompt = HumanMessage(content="Remember: You have access to tools like vector search and online search (gov.in, nic.in) to find Indian legal content. Please use them before responding.")
-                second_try = app_state["llm"].invoke([SYSTEM_PROMPT, reminder_prompt] + messages).content
-                if "i am unable to perform online searches" in second_try.lower() or "based on the data i've been trained on" in second_try.lower():
-                    response = "⚠️ I could not find relevant content through Indian legal sources at this time. Please refine your query or try again later."
-                else:
-                    response = second_try
-            else:
-                response = llm_response
-    except Exception as e:
-        logging.exception("Tool execution error")
-        response = "⚠️ Sorry, something went wrong while processing your request. Please try again later."
-
-    return {"messages": messages + [AIMessage(content=response)]}
-
-# --- LangGraph Setup ---
-def build_graph():
-    sg = StateGraph(State)
-    sg.add_node("agent", tool_agent_node)
-    sg.set_entry_point("agent")
-    sg.set_finish_point("agent")
-    return sg.compile(checkpointer=MemorySaver())
-
-# --- Initialization ---
-def initialize():
-    api_key = os.getenv("MISTRAL_API_KEY")
-    if not api_key:
-        logging.warning("Missing MISTRAL_API_KEY. LLM features may not function.")
-        return
-
-    llm = ChatMistralAI(model="mistral-small-latest", temperature=0, api_key=api_key)
-    app_state["tools"] = {
-        "vector": search_indian_law_documents,
-        "summarizer": SummarizationTool(llm),
-        "online": OnlineSearchTool(llm)
-    }
-    app_state["llm"] = llm
-    app_state["graph"] = build_graph()
-    app_state["executor"] = ThreadPoolExecutor(max_workers=8)
-
-# --- API Setup ---
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    initialize()
-    yield
-    if app_state["executor"]:
-        app_state["executor"].shutdown()
-
-app = FastAPI(title="Jurisol", lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], #["http://localhost:8501"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+# Initialize the LLM with the Mistral model
+llm = ChatMistralAI(
+    model_name="mistral-small-latest",
+    temperature=0.1,
+    streaming=True,
+    max_tokens=2048
 )
 
-# --- API Routes ---
-@app.get("/health", response_model=HealthResponse)
-async def health():
-    return HealthResponse(status="healthy", timestamp=time.time())
+# Define the state for the chat node
+class ChatState(TypedDict):
+    messages: Annotated[list[BaseMessage], add_messages]
 
-@app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+def is_legal_query(query: str) -> bool:
+    """
+    Determine if a query requires legal research or is just casual conversation
+    """
+    query_lower = query.lower().strip()
+    
+    # Casual conversation patterns
+    casual_patterns = [
+        r'^(hi|hello|hey|good morning|good afternoon|good evening)',
+        r'^(my name is|i am|i\'m)',
+        r'^(how are you|what\'s up|sup)',
+        r'^(thank you|thanks|bye|goodbye)',
+        r'^(can you help|what can you do)',
+        r'^(test|testing)',
+    ]
+    
+    # Check if it matches casual patterns
+    for pattern in casual_patterns:
+        if re.match(pattern, query_lower):
+            print(f"[DEBUG] Casual query detected: {query[:50]}...")
+            return False
+    
+    # Legal keywords that indicate need for search
+    legal_keywords = [
+        'law', 'legal', 'court', 'judge', 'case', 'section', 'act', 'constitution',
+        'rights', 'duty', 'obligation', 'contract', 'agreement', 'property',
+        'criminal', 'civil', 'family', 'divorce', 'marriage', 'inheritance',
+        'business', 'company', 'registration', 'license', 'permit', 'tax',
+        'labour', 'employment', 'salary', 'wages', 'dispute', 'complaint',
+        'police', 'arrest', 'bail', 'custody', 'evidence', 'witness',
+        'appeal', 'petition', 'suit', 'hearing', 'trial', 'verdict',
+        'ipc', 'crpc', 'cpc', 'indian penal code', 'constitution of india',
+        'supreme court', 'high court', 'district court', 'magistrate'
+    ]
+    
+    # Check if query contains legal keywords
+    has_legal_keywords = any(keyword in query_lower for keyword in legal_keywords)
+    
+    # If query is longer than 10 words and no legal keywords, probably still legal
+    word_count = len(query.split())
+    is_complex_query = word_count > 10
+    
+    is_legal = has_legal_keywords or is_complex_query
+    
+    print(f"[DEBUG] Query analysis: '{query[:50]}...' -> Legal: {is_legal} (keywords: {has_legal_keywords}, complex: {is_complex_query})")
+    
+    return is_legal
+
+def process_search_results(search_results) -> str:
+    """
+    Process search results handling different return types (string, dict, list, etc.)
+    """
+    if not search_results:
+        return ""
+    
     try:
-        user_msg = {"role": "user", "content": request.message}
-        # Use only last few messages to control token usage
-        chat_history = request.history[-4:] if request.history else []
-
-        lc_messages = [
-            HumanMessage(content=m["content"]) if m["role"] == "user"
-            else AIMessage(content=m["content"])
-            for m in chat_history if "content" in m
-        ] + [HumanMessage(content=request.message)]
-
-        result = await asyncio.get_event_loop().run_in_executor(
-            app_state["executor"],
-            lambda: app_state["graph"].invoke({"messages": lc_messages}, config={"configurable": {"thread_id": "stateless"}})
-        )
-
-        final_msg = result["messages"][-1].content
-
-        return ChatResponse(response=final_msg, session_id="stateless", timestamp=time.time())
+        # Handle different return types from search tools
+        if isinstance(search_results, str):
+            return search_results.strip()
+        elif isinstance(search_results, dict):
+            # If it's a dict, try to extract meaningful content
+            if 'content' in search_results:
+                content = search_results['content']
+                return str(content).strip() if content else ""
+            elif 'results' in search_results:
+                results = search_results['results']
+                if isinstance(results, list):
+                    return '\n'.join([str(item) for item in results if item])
+                return str(results).strip() if results else ""
+            elif 'text' in search_results:
+                return str(search_results['text']).strip()
+            else:
+                # Convert entire dict to string as fallback
+                return str(search_results).strip()
+        elif isinstance(search_results, list):
+            # If it's a list, join the elements
+            return '\n'.join([str(item) for item in search_results if item])
+        else:
+            # For any other type, convert to string
+            return str(search_results).strip()
     except Exception as e:
-        logging.exception("Chat processing error")
-        raise HTTPException(status_code=500, detail="Something went wrong. Please try again later.")
+        print(f"[DEBUG] Error processing search results: {e}")
+        return ""
+
+def get_enhanced_response_with_search(query: str, messages: list) -> str:
+    """
+    Enhanced response generation with legal document search
+    """
+    print(f"[DEBUG] Performing legal research for: {query[:50]}...")
+    
+    context = ""
+    
+    try:
+        # Try vector search first
+        raw_search_results = search_indian_law_documents_wrapped.func(query)
+        print(f"[DEBUG] Raw vector search results type: {type(raw_search_results)}")
+        print(f"[DEBUG] Raw vector search results: {str(raw_search_results)[:200]}...")
+        
+        search_results = process_search_results(raw_search_results)
+        print(f"[DEBUG] Processed vector search results: {bool(search_results and search_results.strip())}")
+        
+        if search_results and search_results.strip():
+            context = f"Based on the Indian legal documents:\n{search_results}\n\n"
+            print(f"[DEBUG] Using vector search results")
+        else:
+            print(f"[DEBUG] Vector search yielded no usable results, trying online search")
+            # If no vector results, try online search
+            try:
+                raw_online_results = online_search_tool_wrapped.func(query)
+                print(f"[DEBUG] Raw online search results type: {type(raw_online_results)}")
+                
+                online_results = process_search_results(raw_online_results)
+                print(f"[DEBUG] Processed online search results: {bool(online_results and online_results.strip())}")
+                
+                if online_results and online_results.strip():
+                    context = f"Based on the online search results:\n{online_results}\n\n"
+                    print(f"[DEBUG] Using online search results")
+            except Exception as e:
+                print(f"[DEBUG] Online search failed: {e}")
+    
+    except Exception as e:
+        print(f"[DEBUG] Vector search failed: {e}")
+        context = ""
+    
+    # Create enhanced prompt with context
+    try:
+        if context:
+            enhanced_prompt = (
+                f"{context}\n"
+                "Please provide a detailed answer to the user's question about Indian law. "
+                "Include specific references to relevant constitutional articles, sections, or legal precedents. "
+                "Make sure the response is well-structured and easy to understand."
+            )
+            
+            # Add enhanced prompt to messages
+            enhanced_messages = messages + [HumanMessage(content=enhanced_prompt)]
+            response = llm.invoke(enhanced_messages)
+            print(f"[DEBUG] Enhanced LLM response generated successfully")
+            
+        else:
+            # No search results found, use direct response
+            print(f"[DEBUG] No search results found, using direct response")
+            response = llm.invoke(messages)
+        
+        return response
+        
+    except Exception as e:
+        print(f"[DEBUG] Error generating response: {e}")
+        # Return a basic response in case of any error
+        basic_messages = [
+            SystemMessage(content="You are Jurisol, a helpful legal assistant specializing in Indian law."),
+            HumanMessage(content=query)
+        ]
+        return llm.invoke(basic_messages)
+
+def get_direct_response(messages: list) -> str:
+    """
+    Direct response without search for casual queries
+    """
+    print(f"[DEBUG] Generating direct response for casual query")
+    response = llm.invoke(messages)
+    return response
+
+# Define the tool calling function with intelligent query classification
+def tool_calling_llm(state: ChatState):
+    messages = state["messages"]
+    
+    if not messages:
+        return {"messages": [AIMessage(content="Hello! I'm Jurisol, your AI legal assistant. How can I help you with Indian law today?")]}
+    
+    # Get the user's query
+    user_query = messages[-1].content
+    print(f"[DEBUG] Processing query: {user_query[:100]}...")
+    
+    # Determine if this requires legal research
+    needs_legal_search = is_legal_query(user_query)
+    
+    # Prepare system message and user messages
+    system_message = SystemMessage(content=SYSTEM_PROMPT.content)
+    conversation_messages = [system_message] + messages
+    
+    try:
+        if needs_legal_search:
+            print(f"[DEBUG] Legal query detected, performing research...")
+            # Perform legal research and enhanced response
+            response = get_enhanced_response_with_search(user_query, conversation_messages)
+        else:
+            print(f"[DEBUG] Casual query detected, direct response...")
+            # Direct conversational response
+            response = get_direct_response(conversation_messages)
+        
+        # Validate response
+        if response and hasattr(response, 'content') and response.content.strip():
+            print(f"[DEBUG] Response generated successfully: {response.content[:100]}...")
+            return {"messages": [response]}
+        else:
+            # Fallback response
+            print(f"[DEBUG] Invalid response, using fallback")
+            fallback_response = llm.invoke([
+                SystemMessage(content="You are Jurisol, a helpful legal assistant specializing in Indian law."),
+                HumanMessage(content=user_query)
+            ])
+            
+            if fallback_response and hasattr(fallback_response, 'content'):
+                return {"messages": [fallback_response]}
+            else:
+                # Ultimate fallback
+                ultimate_fallback = AIMessage(content="I understand you're asking about legal matters. Could you please rephrase your question so I can assist you better?")
+                return {"messages": [ultimate_fallback]}
+            
+    except Exception as e:
+        print(f"[DEBUG] Error in tool_calling_llm: {e}")
+        import traceback
+        print(f"[DEBUG] Full traceback: {traceback.format_exc()}")
+        
+        # Error fallback with more specific message
+        try:
+            error_response = llm.invoke([
+                SystemMessage(content="You are Jurisol, a legal assistant. Acknowledge the user's legal question and provide a helpful response."),
+                HumanMessage(content=f"The user asked: {user_query}")
+            ])
+            return {"messages": [error_response]}
+        except Exception as e2:
+            print(f"[DEBUG] Even fallback failed: {e2}")
+            # Ultimate error fallback
+            final_fallback = AIMessage(content="I apologize for the technical difficulty. I'm here to help with Indian legal questions. Please try rephrasing your question, and I'll do my best to assist you.")
+            return {"messages": [final_fallback]}
+
+# Define the tools with their wrapped functions
+online_search_tool_wrapped = Tool(
+    name="online_search_tool",
+    description="Search and summarize Indian government websites for a given query.",
+    func=OnlineSearchTool(llm)
+)
+
+search_indian_law_documents_wrapped = Tool(
+    name="search_indian_law_documents",
+    description="Search the Indian law vector store for relevant legal documents and provisions.",
+    func=chroma_search_with_score
+)
+
+summarization_tool_wrapped = Tool(
+    name="summarization_tool",
+    description="Summarize the provided text into concise legal insights.",
+    func=SummarizationTool(llm)
+)
+
+# Bind the tools to the LLM
+tools = [online_search_tool_wrapped, search_indian_law_documents_wrapped, summarization_tool_wrapped]
+llm_with_tools = llm.bind_tools(tools)
+
+# Checkpointer
+checkpointer = InMemorySaver()
+
+# Define the state graph for the chatbot
+builder = StateGraph(ChatState)
+builder.add_node("tool_calling_llm", tool_calling_llm)
+builder.add_node("tools", ToolNode(tools))
+
+# Add Edges
+builder.add_edge(START, "tool_calling_llm")
+builder.add_conditional_edges(
+    "tool_calling_llm",
+    tools_condition
+)
+builder.add_edge("tools", "tool_calling_llm")
+
+# Compile the chatbot with the defined state graph and checkpointer
+chatbot = builder.compile(checkpointer=checkpointer)
