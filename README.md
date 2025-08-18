@@ -14,6 +14,9 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Issues](https://img.shields.io/github/issues/wsmaisys/Jurisol-legal-assistant-RAG)
+[![Live Demo](https://img.shields.io/badge/demo-live-success?logo=render)](https://jurisol-legal-assistant-rag.onrender.com)
+
+**🌐 Live Demo:** [Try Jurisol Now!](https://jurisol-legal-assistant-rag.onrender.com)
 
 ---
 
@@ -168,13 +171,23 @@ docker run --env-file .env -p 8501:8501 wasimansariiitm/jurisol-legal-assistant
 
 ---
 
-## 🚀 Production & Deployment Tips
+## 🚀 Production & Deployment
 
-- Use Docker for consistent deployment.
-- Pass secrets and API keys via environment variables or Docker secrets.
-- For scalability, run FastAPI and Streamlit in separate containers behind a reverse proxy (Nginx, Traefik).
-- Use a managed Chroma instance or run Chroma with SQLite for local development.
-- Set up monitoring, logging, and health checks for robust production operation.
+### Live Demo
+The application is deployed and available at:
+[https://jurisol-legal-assistant-rag.onrender.com](https://jurisol-legal-assistant-rag.onrender.com)
+
+### Deployment Tips
+- Use Docker for consistent deployment
+- Pass secrets and API keys via environment variables or Docker secrets
+- For scalability, run FastAPI and Streamlit in separate containers behind a reverse proxy (Nginx, Traefik)
+- Use a managed Chroma instance or run Chroma with SQLite for local development
+- Set up monitoring, logging, and health checks for robust production operation
+
+### Deployment Platforms
+- Currently deployed on [Render](https://render.com)
+- Can be deployed to any platform that supports Docker containers
+- Suitable for deployment on AWS, GCP, Azure, or any cloud platform
 
 ---
 
