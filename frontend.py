@@ -24,6 +24,9 @@ def reset_chat():
         len(st.session_state['message_history']) > 0):
         save_thread_to_storage(st.session_state['thread_id'], st.session_state['message_history'])
     
+    # Clear message history first
+    st.session_state['message_history'] = []
+    
     # Generate new thread ID
     new_thread_id = generate_thread_id()
     
@@ -37,6 +40,10 @@ def reset_chat():
     # Add new thread to the list
     add_thread(new_thread_id)
     print(f"[DEBUG] New thread created: {new_thread_id}")
+    
+    # Force a clean slate in thread storage for new thread
+    if 'thread_storage' in st.session_state and new_thread_id in st.session_state['thread_storage']:
+        del st.session_state['thread_storage'][new_thread_id]
 
 def save_thread_to_storage(thread_id, messages):
     """Save thread messages to persistent storage"""
@@ -414,12 +421,15 @@ with st.sidebar:
                             
                             print(f"[DEBUG] Switching from thread {st.session_state['thread_id']} to {thread_id}")
                             
+                            # Clear current state
+                            st.session_state['message_history'] = []
+                            
                             # Switch to the selected thread
                             st.session_state['thread_id'] = thread_id
                             
                             # Load the selected conversation
                             messages = load_thread_from_storage(thread_id)
-                            st.session_state['message_history'] = messages
+                            st.session_state['message_history'] = messages.copy() if messages else []
                             
                             print(f"[DEBUG] Loaded {len(messages)} messages for thread {thread_id}")
                             st.rerun()
