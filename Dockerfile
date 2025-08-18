@@ -19,16 +19,14 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Create necessary directories first
-RUN mkdir -p /app/tools/chroma_legal_index && \
-    mkdir -p /app/Law_Bare_Acts_Json
+# Create directory for Chroma database
+RUN mkdir -p /app/tools/chroma_legal_index
 
 # Copy files in specific order
 COPY requirements.txt ./
 COPY frontend.py ./
 COPY app.py ./
 COPY tools/ ./tools/
-COPY Law_Bare_Acts_Json/*.json ./Law_Bare_Acts_Json/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
